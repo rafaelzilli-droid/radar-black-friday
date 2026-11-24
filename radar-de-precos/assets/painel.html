@@ -251,7 +251,7 @@ table.tab{min-width:0;display:block}.tab thead{display:none}.tab tbody{display:b
     var ref0 = D.atualizado_em ? new Date(String(D.atualizado_em).slice(0, 10) + 'T12:00:00') : new Date(), validade = N(D.validade_dias) || 3;
     var atual = function (o) { if (!o.visto_em) return false; return (ref0 - new Date(String(o.visto_em).slice(0, 10) + 'T12:00:00')) / 86400000 <= validade; };
     function melhorVista(rs) { return rs.filter(function (o) { return vivo(o) && atual(o) && N(o.pix) !== null && !o.exige_plano; }).sort(function (a, b) { return N(a.pix) - N(b.pix); })[0]; }
-    function melhorParc(rs) { return rs.filter(function (o) { return vivo(o) && atual(o) && N(o.parcelado) !== null && N(o.parcelas) > 1 && o.sem_juros !== 'nao' && !o.exige_plano; }).sort(function (a, b) { return N(a.parcelado) - N(b.parcelado) || (N(b.parcelas) || 0) - (N(a.parcelas) || 0); })[0]; }
+    function melhorParc(rs) { return rs.filter(function (o) { return vivo(o) && atual(o) && N(o.parcelado) !== null && N(o.parcelas) > 1 && o.sem_juros !== 'nao' && !o.exige_plano; }).sort(function (a, b) { return N(a.parcelado) - N(b.parcelado) || (b.sem_juros === 'sim') - (a.sem_juros === 'sim') || (N(b.parcelas) || 0) - (N(a.parcelas) || 0); })[0]; }
 
     function logo(o, mini) {
       var box = el('span', 'logo' + (mini ? ' mini' : ''));
