@@ -32,7 +32,7 @@ Para cada produto, siga `references/coleta.md` (lojas, como verificar, o que des
 - Desconfie de preço muito abaixo do resto do mercado: costuma ser oferta relâmpago, cupom restrito ou vendedor duvidoso. Registre, mas diga isso nas condições.
 - Nada de usado, recondicionado ou seminovo, a menos que a pessoa peça.
 
-Busque também uma foto oficial de cada produto (a `og:image` da página do fabricante ou da loja) e 3 ou 4 especificações que ajudem a comparar os modelos lado a lado.
+Busque também uma foto oficial de cada produto (imagem de divulgação do fabricante ou a `og:image` da página da loja), 3 ou 4 especificações que ajudem a comparar os modelos e o ícone de cada loja (`loja_logo`).
 
 ## 3. Dados
 
@@ -47,7 +47,7 @@ Entregue conforme o ambiente:
 - **Claude Code ou agente com arquivos**: crie uma pasta `radar/` com `painel.html` e `dados.js` e diga à pessoa para abrir o `painel.html` no navegador.
 - **Outras LLMs sem arquivos**: entregue o HTML completo com os dados embutidos, pronto para salvar como `.html`.
 
-Mantenha o visual do painel; mude só o título e os dados.
+O painel já traz cards dos modelos com foto, ficha técnica e melhor preço, busca por loja, ordenação por parcelado ou à vista, filtro por modelo e grupos de ofertas que abrem e fecham. Mantenha o visual; mude só os dados. Se a pessoa pedir produtos de tipos diferentes (um celular e uma TV, por exemplo), faça um painel por tipo.
 
 ## 5. Monitoramento até o evento
 

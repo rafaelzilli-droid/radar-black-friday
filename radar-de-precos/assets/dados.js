@@ -1,28 +1,29 @@
-// Exemplo real: iPhones monitorados de 24 a 27/11/2026 (preços da coleta de 24/11).
+// Exemplo real: iPhones monitorados na semana da Black Friday de 2026 (coleta de 24/11).
 window.RADAR = {
- "titulo": "iPhone na Black Friday",
  "evento": {
   "nome": "Black Friday",
   "data": "2026-11-27"
  },
  "moeda": "BRL",
- "atualizado_em": "2026-11-24T09:00:00-03:00",
- "proxima_atualizacao": "qua 25/11, 10h",
+ "atualizado_em": "2026-11-24T11:40:00-03:00",
+ "proxima_atualizacao": null,
+ "titulo": "iPhone na Black Friday",
+ "subtitulo": "iPhone 17, 17 Pro e 18 Pro de 256 GB",
  "produtos": [
   {
    "id": "iphone-17",
    "nome": "iPhone 17",
-   "variante": "256GB",
-   "meta_preco": 5300,
+   "variante": "256 GB",
    "imagem": "https://www.apple.com/newsroom/images/2025/09/apple-debuts-iphone-17/article/Apple-iPhone-17-hero-250909_inline.jpg.large.jpg",
+   "meta_preco": 5300,
    "specs": [
     [
      "Chip",
-     "A19, 8GB de RAM"
+     "A19, 8 GB de RAM"
     ],
     [
      "Câmeras",
-     "2 de 48MP, sem teleobjetiva"
+     "2 de 48 MP, sem teleobjetiva"
     ],
     [
      "Bateria",
@@ -30,25 +31,25 @@ window.RADAR = {
     ],
     [
      "Tela",
-     "6,3\", 120Hz"
+     "6,3\", 120 Hz"
     ]
    ]
   },
   {
    "id": "iphone-17-pro",
    "nome": "iPhone 17 Pro",
-   "variante": "256GB",
-   "meta_preco": 8000,
-   "nota": "Saiu de linha: estoque acabando.",
+   "variante": "256 GB",
    "imagem": "https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-color-lineup-250909_inline.jpg.large.jpg",
+   "meta_preco": 8000,
+   "nota": "Fora de linha. Estoque limitado.",
    "specs": [
     [
      "Chip",
-     "A19 Pro, 12GB de RAM"
+     "A19 Pro, 12 GB de RAM"
     ],
     [
      "Câmeras",
-     "3 de 48MP, tele 4x"
+     "3 de 48 MP, teleobjetiva 4x"
     ],
     [
      "Bateria",
@@ -56,24 +57,24 @@ window.RADAR = {
     ],
     [
      "Tela",
-     "6,3\", 120Hz"
+     "6,3\", 120 Hz"
     ]
    ]
   },
   {
    "id": "iphone-18-pro",
    "nome": "iPhone 18 Pro",
-   "variante": "256GB",
-   "meta_preco": 9000,
+   "variante": "256 GB",
    "imagem": "https://www.apple.com/newsroom/images/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/article/Apple-iPhone-18-Pro-color-lineup-260909_big.jpg.large.jpg",
+   "meta_preco": 9000,
    "specs": [
     [
      "Chip",
-     "A20 Pro (2nm)"
+     "A20 Pro (2 nm)"
     ],
     [
      "Câmeras",
-     "3 de 48MP, abertura variável"
+     "3 de 48 MP, abertura variável"
     ],
     [
      "Bateria",
@@ -81,13 +82,14 @@ window.RADAR = {
     ],
     [
      "Tela",
-     "6,3\", 120Hz"
+     "6,3\", 120 Hz"
     ]
    ]
   }
  ],
  "ofertas": [
   {
+   "id": "17-amazon",
    "loja": "Amazon",
    "pix": 5273,
    "parcelado": null,
@@ -101,9 +103,11 @@ window.RADAR = {
    "link": "https://www.amazon.com.br/s?k=iphone+17+256gb",
    "link_tipo": "busca na loja",
    "produto_id": "iphone-17",
-   "id": "17-amazon"
+   "loja_id": "amazon",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=amazon.com.br&sz=64"
   },
   {
+   "id": "17-mercadolivre",
    "loja": "Mercado Livre (loja oficial Apple)",
    "pix": 5566,
    "parcelado": 5859,
@@ -117,9 +121,11 @@ window.RADAR = {
    "link": "https://lista.mercadolivre.com.br/iphone-17-256gb",
    "link_tipo": "busca na loja",
    "produto_id": "iphone-17",
-   "id": "17-mercadolivre"
+   "loja_id": "mercadolivre",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=mercadolivre.com.br&sz=64"
   },
   {
+   "id": "17-kabum",
    "loja": "KaBuM!",
    "pix": 5699,
    "parcelado": 6332.2,
@@ -133,9 +139,11 @@ window.RADAR = {
    "link": "https://www.kabum.com.br/produto/1016333/iphone-17-256gb-branco",
    "link_tipo": "anúncio",
    "produto_id": "iphone-17",
-   "id": "17-kabum"
+   "loja_id": "kabum",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=kabum.com.br&sz=64"
   },
   {
+   "id": "17-magalu",
    "loja": "Magalu",
    "pix": 5744,
    "parcelado": 6382.2,
@@ -149,9 +157,11 @@ window.RADAR = {
    "link": "https://www.magazineluiza.com.br/busca/iphone+17+256gb/",
    "link_tipo": "busca na loja",
    "produto_id": "iphone-17",
-   "id": "17-magalu"
+   "loja_id": "magalu",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=magazineluiza.com.br&sz=64"
   },
   {
+   "id": "17-claro",
    "loja": "Claro",
    "pix": 6299,
    "parcelado": 6298.95,
@@ -165,9 +175,11 @@ window.RADAR = {
    "link": "https://planoscelular.claro.com.br/celulares/apple-iphone-17-256gb-branco/p/000000000000019460",
    "link_tipo": "anúncio",
    "produto_id": "iphone-17",
-   "id": "17-claro"
+   "loja_id": "claro",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=claro.com.br&sz=64"
   },
   {
+   "id": "17-casasbahia",
    "loja": "Casas Bahia (vendido pela iPlace)",
    "pix": 6499,
    "parcelado": null,
@@ -181,9 +193,11 @@ window.RADAR = {
    "link": "https://www.casasbahia.com.br/iphone-17-256gb-branco/p/1582354893",
    "link_tipo": "anúncio",
    "produto_id": "iphone-17",
-   "id": "17-casasbahia"
+   "loja_id": "casasbahia",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=casasbahia.com.br&sz=64"
   },
   {
+   "id": "17-iplace",
    "loja": "iPlace",
    "pix": null,
    "parcelado": 6715.8,
@@ -197,9 +211,11 @@ window.RADAR = {
    "link": "https://www.iplace.com.br/black-friday",
    "link_tipo": "página de ofertas",
    "produto_id": "iphone-17",
-   "id": "17-iplace"
+   "loja_id": "iplace",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=iplace.com.br&sz=64"
   },
   {
+   "id": "17-tim",
    "loja": "TIM",
    "pix": null,
    "parcelado": 4956,
@@ -213,9 +229,11 @@ window.RADAR = {
    "link": "https://www.tim.com.br/rj/para-voce/black-friday/iphone",
    "link_tipo": "página de ofertas",
    "produto_id": "iphone-17",
-   "id": "17-tim"
+   "loja_id": "tim",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=tim.com.br&sz=64"
   },
   {
+   "id": "17pro-fastshop",
    "loja": "Fast Shop",
    "pix": 8819,
    "parcelado": null,
@@ -229,9 +247,11 @@ window.RADAR = {
    "link": "https://www.zoom.com.br/busca/iphone+17+pro+max+magalu",
    "link_tipo": "onde vi",
    "produto_id": "iphone-17-pro",
-   "id": "17pro-fastshop"
+   "loja_id": "fastshop",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=fastshop.com.br&sz=64"
   },
   {
+   "id": "17pro-amazon",
    "loja": "Amazon",
    "pix": 9879.05,
    "parcelado": null,
@@ -252,9 +272,11 @@ window.RADAR = {
     }
    ],
    "produto_id": "iphone-17-pro",
-   "id": "17pro-amazon"
+   "loja_id": "amazon",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=amazon.com.br&sz=64"
   },
   {
+   "id": "17pro-magalu",
    "loja": "Magalu",
    "pix": 9359.1,
    "parcelado": 10399,
@@ -268,9 +290,11 @@ window.RADAR = {
    "link": "https://www.magazineluiza.com.br/apple-iphone-17-pro-256gb-prateado-63-48mp-ios-5g/p/240588800/te/17pr/",
    "link_tipo": "anúncio",
    "produto_id": "iphone-17-pro",
-   "id": "17pro-magalu"
+   "loja_id": "magalu",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=magazineluiza.com.br&sz=64"
   },
   {
+   "id": "18pro-amazon",
    "loja": "Amazon",
    "pix": 10799,
    "parcelado": 11998.89,
@@ -291,9 +315,11 @@ window.RADAR = {
     }
    ],
    "produto_id": "iphone-18-pro",
-   "id": "18pro-amazon"
+   "loja_id": "amazon",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=amazon.com.br&sz=64"
   },
   {
+   "id": "18pro-mercadolivre",
    "loja": "Mercado Livre (loja oficial Apple)",
    "pix": 9210,
    "parcelado": 10234,
@@ -307,9 +333,11 @@ window.RADAR = {
    "link": "https://lista.mercadolivre.com.br/iphone-18-pro-256gb",
    "link_tipo": "busca na loja",
    "produto_id": "iphone-18-pro",
-   "id": "18pro-mercadolivre"
+   "loja_id": "mercadolivre",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=mercadolivre.com.br&sz=64"
   },
   {
+   "id": "18pro-magalu",
    "loja": "Magalu",
    "pix": 10799.1,
    "parcelado": 11999,
@@ -323,9 +351,11 @@ window.RADAR = {
    "link": "https://www.magazineluiza.com.br/busca/iphone+18+pro+256gb/",
    "link_tipo": "busca na loja",
    "produto_id": "iphone-18-pro",
-   "id": "18pro-magalu"
+   "loja_id": "magalu",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=magazineluiza.com.br&sz=64"
   },
   {
+   "id": "18pro-fastshop",
    "loja": "Fast Shop (vendido pela Mobcom)",
    "pix": 10799.1,
    "parcelado": null,
@@ -339,9 +369,11 @@ window.RADAR = {
    "link": "https://site.fastshop.com.br/apple-iphone-18-pro-256gb-preto-187568/p",
    "link_tipo": "anúncio",
    "produto_id": "iphone-18-pro",
-   "id": "18pro-fastshop"
+   "loja_id": "fastshop",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=fastshop.com.br&sz=64"
   },
   {
+   "id": "18pro-apple",
    "loja": "Apple Store",
    "pix": 10799.1,
    "parcelado": 11999,
@@ -355,7 +387,9 @@ window.RADAR = {
    "link": "https://www.apple.com/br/shop/buy-iphone",
    "link_tipo": "loja",
    "produto_id": "iphone-18-pro",
-   "id": "18pro-apple"
+   "loja_id": "apple",
+   "loja_logo": "https://www.google.com/s2/favicons?domain=apple.com&sz=64"
   }
- ]
+ ],
+ "metas_fonte": "Metas: Tekimobile e TecMundo (17), Tekimobile e Diário da Mídia (17 Pro), Tekimobile (18 Pro)."
 };
