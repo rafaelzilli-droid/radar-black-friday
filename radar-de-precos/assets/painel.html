@@ -174,6 +174,7 @@ details.ajuda li{margin-bottom:6px}
       <li><b>Visto na loja</b>: o preço foi conferido na página do anúncio. <b>Não verificado</b>: veio de notícia, comparador ou listagem e precisa ser conferido no carrinho.</li>
       <li><b>Referência</b>: preço oficial do fabricante, para comparação.</li>
       <li><b>Histórico de preços</b> mostra o menor preço à vista registrado em cada dia. O registro começa na primeira coleta; preços de antes vêm de notícias datadas, quando existem.</li>
+      <li>O <b>melhor preço</b> de cada modelo só considera ofertas vistas nos últimos 3 dias. As mais antigas continuam na lista com a etiqueta "preço antigo".</li>
       <li>Ofertas que exigem plano de operadora ou assinatura ficam escondidas por padrão, porque o custo mensal não entra no total.</li>
     </ul>
   </details>
@@ -211,8 +212,11 @@ details.ajuda li{margin-bottom:6px}
     var porId = {}; produtos.forEach(function (p) { porId[p.id] = p; });
     var de = function (pid) { return ofertas.filter(function (o) { return o.produto_id === pid; }); };
     var vivo = function (o) { return o.status !== 'Esgotado' && o.status !== 'Referência'; };
-    function melhorVista(rs) { return rs.filter(function (o) { return vivo(o) && N(o.pix) !== null && !o.exige_plano; }).sort(function (a, b) { return N(a.pix) - N(b.pix); })[0]; }
-    function melhorParc(rs) { return rs.filter(function (o) { return vivo(o) && N(o.parcelado) !== null && o.sem_juros === 'sim' && !o.exige_plano; }).sort(function (a, b) { return N(a.parcelado) - N(b.parcelado) || (N(b.parcelas) || 0) - (N(a.parcelas) || 0); })[0]; }
+    // Preço "atual" = visto até N dias antes da coleta. Mais antigo continua na lista, marcado, mas não entra no melhor preço nem no histórico.
+    var ref0 = D.atualizado_em ? new Date(String(D.atualizado_em).slice(0, 10) + 'T12:00:00') : new Date(), validade = N(D.validade_dias) || 3;
+    var atual = function (o) { if (!o.visto_em) return false; return (ref0 - new Date(String(o.visto_em).slice(0, 10) + 'T12:00:00')) / 86400000 <= validade; };
+    function melhorVista(rs) { return rs.filter(function (o) { return vivo(o) && atual(o) && N(o.pix) !== null && !o.exige_plano; }).sort(function (a, b) { return N(a.pix) - N(b.pix); })[0]; }
+    function melhorParc(rs) { return rs.filter(function (o) { return vivo(o) && atual(o) && N(o.parcelado) !== null && o.sem_juros === 'sim' && !o.exige_plano; }).sort(function (a, b) { return N(a.parcelado) - N(b.parcelado) || (N(b.parcelas) || 0) - (N(a.parcelas) || 0); })[0]; }
 
     function logo(o, mini) {
       var box = el('span', 'logo' + (mini ? ' mini' : ''));
@@ -291,7 +295,7 @@ details.ajuda li{margin-bottom:6px}
       [[a, 'Menor à vista', a ? F(N(a.pix)) : '—', null], [q, 'Melhor parcelado', q ? (N(q.parcelas) ? N(q.parcelas) + 'x de ' + F(N(q.parcelado) / N(q.parcelas)) : F(N(q.parcelado))) : '—', q && N(q.parcelas) ? 'total ' + F(N(q.parcelado)) + ' sem juros' : null]].forEach(function (x) {
         var box = el('div', 'mbox'); box.append(el('div', 'mrot', x[1]), el('div', 'mval', x[2])); if (x[3]) box.append(el('div', 'mtot', x[3]));
         if (x[0]) { var lj = el('div', 'mloja'); lj.append(logo(x[0], true), el('span', '', x[0].loja)); box.append(lj); var lk = link(x[0], 'Ver oferta', 'mlink'); if (lk) box.append(lk); }
-        else box.append(el('div', 'mloja', 'Sem oferta ainda'));
+        else box.append(el('div', 'mloja', 'Sem preço confirmado nos últimos ' + validade + ' dias'));
         m.append(box);
       });
       b.append(m);
@@ -328,7 +332,7 @@ details.ajuda li{margin-bottom:6px}
     document.getElementById('busca').addEventListener('input', function (e) { st.busca = norm(e.target.value.trim()); draw(); });
     [['f-verificado', 'verificado'], ['f-plano', 'plano'], ['f-esgotado', 'esgotado']].forEach(function (x) { document.getElementById(x[0]).addEventListener('change', function (e) { st[x[1]] = e.target.checked; draw(); }); });
 
-    var abertos = {};
+    var abertos = {}; try { abertos = JSON.parse(localStorage.getItem('radar-grupos') || '{}') || {}; } catch (e) {}
     function draw() {
       var lista = document.getElementById('lista'); lista.replaceChildren(); var total = 0;
       produtos.filter(function (p) { return st.ativos.indexOf(p.id) >= 0; }).forEach(function (p) {
@@ -346,20 +350,20 @@ details.ajuda li{margin-bottom:6px}
           var sa = a.sem_juros === 'sim' ? 0 : 1, sb = b.sem_juros === 'sim' ? 0 : 1;
           return sa - sb || ta - tb || (N(b.parcelas) || 0) - (N(a.parcelas) || 0);
         });
-        rs.sort(function (a, b) { return (a.status === 'Referência') - (b.status === 'Referência') || (a.status === 'Esgotado') - (b.status === 'Esgotado'); });
+        rs.sort(function (a, b) { return (a.status === 'Referência') - (b.status === 'Referência') || (a.status === 'Esgotado') - (b.status === 'Esgotado') || (!atual(a)) - (!atual(b)); });
         total += rs.length;
         var g = el('details', 'grupo'); g.id = 'ofertas-' + p.id; g.open = abertos[p.id] !== false;
-        g.addEventListener('toggle', function () { abertos[p.id] = g.open; });
+        g.addEventListener('toggle', function () { abertos[p.id] = g.open; try { localStorage.setItem('radar-grupos', JSON.stringify(abertos)); } catch (e) {} });
         var s = el('summary');
         if (p.imagem && safe(p.imagem)) { var ti = el('img', 'gthumb'); ti.src = p.imagem; ti.alt = ''; s.append(ti); }
-        var tx = el('div'); tx.append(el('div', 'gtit', p.nome + (p.variante ? ' · ' + p.variante : '')), el('div', 'gsub', rs.length + (rs.length === 1 ? ' oferta' : ' ofertas') + (rs[0] && vivo(rs[0]) ? ' · melhor: ' + (st.ordem === 'vista' ? F(N(rs[0].pix)) : (N(rs[0].parcelado) !== null ? F(N(rs[0].parcelado)) : '')) + ' na ' + rs[0].loja : '')));
+        var tx = el('div'); tx.append(el('div', 'gtit', p.nome + (p.variante ? ' · ' + p.variante : '')), el('div', 'gsub', rs.length + (rs.length === 1 ? ' oferta' : ' ofertas') + (rs[0] && vivo(rs[0]) && atual(rs[0]) ? ' · melhor: ' + (st.ordem === 'vista' ? F(N(rs[0].pix)) : (N(rs[0].parcelado) !== null ? F(N(rs[0].parcelado)) : '')) + ' na ' + rs[0].loja : '')));
         s.append(tx, el('span', 'seta', '⌄')); g.append(s);
         if (!rs.length) { g.append(el('p', 'vazio', st.ordem === 'vista' ? 'Nenhum preço à vista com esses filtros.' : 'Nenhum parcelamento com esses filtros.')); lista.append(g); return; }
         var ol = el('ol', 'ofertas'), n = 0;
         rs.forEach(function (o) {
           var ref = o.status === 'Referência', esg = o.status === 'Esgotado';
           if (!ref && !esg) n++;
-          var li = el('li', 'of' + (n === 1 && !ref && !esg ? ' top' : '') + (esg ? ' esgotado' : ''));
+          var li = el('li', 'of' + (n === 1 && !ref && !esg && atual(o) ? ' top' : '') + (esg ? ' esgotado' : ''));
           li.append(el('div', 'pos', ref ? '·' : esg ? '–' : String(n)), logo(o));
           var body = el('div'); body.append(el('div', 'oloja', o.loja));
           var parc = N(o.parcelado), np = N(o.parcelas), pix = N(o.pix), v = el('div', 'ovalor'), sec = el('div', 'osec');
@@ -376,6 +380,7 @@ details.ajuda li{margin-bottom:6px}
           if (st.ordem !== 'vista') tags.append(el('span', 'tag' + (o.sem_juros === 'sim' ? ' ok' : ''), o.sem_juros === 'sim' ? 'sem juros' : 'juros não informados'));
           if (o.exige_plano) tags.append(el('span', 'tag warn', 'exige plano'));
           tags.append(el('span', 'tag' + (o.status === 'Visto na página da loja' ? ' ok' : o.status === 'Não verificado' || esg ? ' warn' : ''), o.status === 'Visto na página da loja' ? 'visto na loja' : (o.status || '').toLowerCase()));
+          if (!ref && !esg && !atual(o)) tags.append(el('span', 'tag warn', 'preço antigo'));
           tags.append(el('span', 'tag', 'em ' + dataBR(o.visto_em) + (o.fonte ? ' · ' + o.fonte : '')));
           if (pix !== null && !ref && N(p.meta_preco) && pix <= N(p.meta_preco)) tags.append(el('span', 'tag ok', 'meta atingida'));
           body.append(tags); li.append(body);
