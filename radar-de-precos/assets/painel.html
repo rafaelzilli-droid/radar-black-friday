@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar de Preços</title>
+<style>
+:root{--bg:#f7f6f3;--panel:#fff;--fg:#1b1b19;--muted:#6b6a65;--line:#e4e2dc;--ok:#1f7a4d;--warn:#a15c00;--accent:#1b1b19;--accent-fg:#fff;--radius:14px;--serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--fg:#f1efe9;--muted:#a3a19a;--line:#33322f;--ok:#5fc48f;--warn:#f0a94a;--accent:#f1efe9;--accent-fg:#141413}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45}
+.wrap{max-width:1040px;margin:0 auto;padding:28px 20px 60px}
+h1{font-family:var(--serif);font-weight:400;font-size:34px;margin:0 0 6px}
+.lede{color:var(--muted);margin:0 0 6px}
+.lede b{color:var(--fg);font-weight:600}
+.updated{color:var(--muted);font-size:12px;margin:0 0 24px}
+.countdown{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin-left:6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:26px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.photo{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#000}
+.photo.ph{display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--line);font-size:13px}
+.card-body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card h2{font-size:16px;font-weight:600;margin:0}
+.specs{list-style:none;margin:0;padding:0 0 10px;border-bottom:1px solid var(--line);font-size:12px;display:grid;gap:3px}
+.specs li{display:grid;grid-template-columns:72px 1fr;gap:6px}
+.specs span{color:var(--muted)}
+.sum-label{font-size:12px;color:var(--muted)}
+.sum-val{font-family:var(--serif);font-size:24px;font-variant-numeric:tabular-nums}
+.sum-sub{font-size:12px;color:var(--muted)}
+.sum-link{font-size:12px;color:var(--fg)}
+.meta{font-size:12px;color:var(--muted);margin-top:auto}
+.meta .hit{color:var(--ok);font-weight:600}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:13px;background:transparent;color:var(--fg);border:0;padding:7px 13px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg)}
+.check{font-size:13px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
+.group{margin:0 0 24px}
+.group h3{font-size:15px;font-weight:600;margin:0 0 8px}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.item{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.rank{font-family:var(--serif);font-size:24px;color:var(--muted);text-align:center}
+.item.top .rank{color:var(--ok)}
+.store{font-weight:600}
+.main{font-family:var(--serif);font-size:22px;font-variant-numeric:tabular-nums;margin:2px 0}
+.second{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cond{font-size:13px;color:var(--muted);margin-top:4px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{font-size:11px;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}
+.tag.ok{border-color:var(--ok);color:var(--ok)}
+.tag.warn{border-color:var(--warn);color:var(--warn)}
+.btn{display:inline-block;font-size:13px;text-decoration:none;color:var(--accent-fg);background:var(--accent);border-radius:999px;padding:7px 13px;white-space:nowrap}
+.empty{color:var(--muted);font-size:13px}
+details{font-size:13px;color:var(--muted);margin-top:24px}
+details li{margin-bottom:4px}
+footer{font-size:12px;color:var(--muted);margin-top:30px}
+@media (max-width:560px){.item{grid-template-columns:26px 1fr}.item .act{grid-column:2}h1{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="titulo">Radar de Preços</h1>
+  <p class="lede" id="lede"></p>
+  <p class="updated" id="atualizado"></p>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Ordenar por">
+      <button type="button" data-ordem="parcelar" aria-pressed="true">Melhor para parcelar</button>
+      <button type="button" data-ordem="pix" aria-pressed="false">Menor preço à vista</button>
+    </div>
+    <div class="seg" role="group" aria-label="Produto" id="filtro-produtos"></div>
+    <label class="check"><input type="checkbox" id="com-plano"> Mostrar ofertas que exigem plano ou assinatura</label>
+  </div>
+
+  <div id="lista"></div>
+
+  <details>
+    <summary>Como ler esta lista</summary>
+    <ul>
+      <li>"Melhor para parcelar" ordena pelo menor total no cartão; no empate, ganha quem dá mais parcelas sem juros.</li>
+      <li>"Visto na página da loja" quer dizer que o preço apareceu no próprio anúncio. "Não verificado" veio de notícia ou comparador: confira no carrinho.</li>
+      <li>Parcelar sem juros compensa quando o total no cartão é parecido com o à vista e o dinheiro fica rendendo nesse meio tempo.</li>
+      <li>Ofertas de operadora ou com assinatura escondem um custo mensal. Recondicionados e usados ficam de fora.</li>
+    </ul>
+  </details>
+  <footer>Feito com a skill <a href="https://github.com/rafaelzilli-droid/radar-black-friday">Radar de Preços</a>. Preços mudam rápido: confira sempre no carrinho antes de pagar.</footer>
+</div>
+
+<!-- Os dados vêm de dados.js (window.RADAR = {...}) ou de um bloco <script id="radar-dados" type="application/json"> colado aqui. -->
+<script src="dados.js"></script>
+<script>
+(function () {
+  var inline = document.getElementById('radar-dados');
+  var D = window.RADAR || (inline ? JSON.parse(inline.textContent) : null);
+  if (!D) { document.getElementById('lede').textContent = 'Nenhum dado encontrado. Rode a skill para gerar o dados.js.'; return; }
+
+  var produtos = D.produtos || [], ofertas = D.ofertas || [];
+  var moeda = D.moeda || 'BRL';
+  var fmt = new Intl.NumberFormat('pt-BR', {style: 'currency', currency: moeda});
+  var st = {ordem: 'parcelar', produto: 'todos', comPlano: false};
+  var N = function (v) { return v === null || v === undefined || v === '' ? null : Number(v); };
+  var dataBR = function (s) { if (!s) return ''; var p = String(s).split('-'); return p.length === 3 ? p[2] + '/' + p[1] : String(s); };
+  var safe = function (u) { return typeof u === 'string' && /^https?:\/\//.test(u); };
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
+  function nome(p) { return p.nome + (p.variante ? ' · ' + p.variante : ''); }
+  function de(pid) { return ofertas.filter(function (o) { return o.produto_id === pid; }); }
+  function melhorPix(rs) { return rs.filter(function (o) { return N(o.pix) !== null && o.status !== 'Esgotado'; }).sort(function (a, b) { return N(a.pix) - N(b.pix); })[0]; }
+  function melhorParc(rs) {
+    return rs.filter(function (o) { return N(o.parcelado) !== null && o.sem_juros === 'sim' && !o.exige_plano && o.status !== 'Esgotado'; })
+      .sort(function (a, b) { return N(a.parcelado) - N(b.parcelado) || (N(b.parcelas) || 0) - (N(a.parcelas) || 0); })[0];
+  }
+  function menorDaSemana(rs) {
+    var v = [];
+    rs.forEach(function (o) { if (N(o.pix) !== null) v.push(N(o.pix)); (o.historico || []).forEach(function (h) { if (N(h.pix) !== null) v.push(N(h.pix)); }); });
+    return v.length ? Math.min.apply(null, v) : null;
+  }
+  function link(parent, o, label, cls) {
+    if (!safe(o.link)) return;
+    var a = el('a', cls, label + (o.link_tipo && o.link_tipo !== 'anúncio' ? ' (' + o.link_tipo + ')' : '') + ' ↗');
+    a.href = o.link; a.target = '_blank'; a.rel = 'noopener noreferrer'; parent.append(a);
+  }
+
+  document.title = D.titulo || 'Radar de Preços';
+  document.getElementById('titulo').textContent = D.titulo || 'Radar de Preços';
+
+  var lede = document.getElementById('lede');
+  var todosPix = melhorPix(ofertas);
+  if (todosPix) {
+    var p0 = produtos.find(function (p) { return p.id === todosPix.produto_id; });
+    lede.append('Menor preço à vista agora: ');
+    lede.append(el('b', '', (p0 ? p0.nome : '') + ' na ' + todosPix.loja + ' por ' + fmt.format(N(todosPix.pix))));
+    lede.append('.');
+  }
+  if (D.evento && D.evento.data) {
+    var dias = Math.ceil((new Date(D.evento.data + 'T00:00:00') - new Date()) / 86400000);
+    var c = el('span', 'countdown', dias > 0 ? (D.evento.nome || 'Evento') + ' em ' + dias + (dias === 1 ? ' dia' : ' dias') : dias === 0 ? 'É hoje: ' + (D.evento.nome || 'evento') : (D.evento.nome || 'Evento') + ' já passou');
+    lede.append(' ', c);
+  }
+  if (D.atualizado_em) document.getElementById('atualizado').textContent = 'Atualizado em ' + new Date(D.atualizado_em).toLocaleString('pt-BR', {dateStyle: 'short', timeStyle: 'short'}) + (D.proxima_atualizacao ? ' · próxima: ' + D.proxima_atualizacao : '');
+
+  var cards = document.getElementById('cards');
+  produtos.forEach(function (p) {
+    var rs = de(p.id), card = el('section', 'card');
+    if (safe(p.imagem) || (p.imagem && /^data:image\//.test(p.imagem))) {
+      var img = el('img', 'photo'); img.src = p.imagem; img.alt = p.imagem_alt || nome(p); img.loading = 'lazy';
+      img.onerror = function () { var ph = el('div', 'photo ph', 'sem foto'); img.replaceWith(ph); };
+      card.append(img);
+    } else card.append(el('div', 'photo ph', 'sem foto'));
+    var b = el('div', 'card-body'); b.append(el('h2', '', nome(p)));
+    if (p.specs && p.specs.length) {
+      var ul = el('ul', 'specs');
+      p.specs.forEach(function (s) { var li = el('li'); li.append(el('span', '', s[0]), s[1]); ul.append(li); });
+      b.append(ul);
+    }
+    var mp = melhorPix(rs), mq = melhorParc(rs);
+    var r1 = el('div'); r1.append(el('div', 'sum-label', 'Menor à vista'), el('div', 'sum-val', mp ? fmt.format(N(mp.pix)) : '—'));
+    if (mp) { r1.append(el('div', 'sum-sub', mp.loja)); link(r1, mp, 'Abrir menor à vista', 'sum-link'); }
+    var r2 = el('div'); r2.append(el('div', 'sum-label', 'Melhor parcelado sem juros'), el('div', 'sum-val', mq ? (N(mq.parcelas) ? N(mq.parcelas) + 'x · ' : '') + fmt.format(N(mq.parcelado)) : '—'));
+    if (mq) { r2.append(el('div', 'sum-sub', mq.loja)); link(r2, mq, 'Abrir melhor parcelado', 'sum-link'); }
+    b.append(r1, r2);
+    var meta = el('div', 'meta'), semana = menorDaSemana(rs);
+    if (N(p.meta_preco)) {
+      meta.append('Meta: ' + fmt.format(N(p.meta_preco)) + ' à vista. ');
+      if (mp && N(mp.pix) <= N(p.meta_preco)) meta.append(el('span', 'hit', 'Bateu a meta.'));
+    }
+    if (semana !== null) meta.append(' Menor visto no período: ' + fmt.format(semana) + '.');
+    if (p.nota) meta.append(' ' + p.nota);
+    b.append(meta); card.append(b); cards.append(card);
+  });
+
+  var fp = document.getElementById('filtro-produtos');
+  [{id: 'todos', nome: 'Todos'}].concat(produtos).forEach(function (p, i) {
+    var bt = el('button', '', p.id === 'todos' ? 'Todos' : p.nome); bt.type = 'button'; bt.dataset.produto = p.id; bt.setAttribute('aria-pressed', String(i === 0)); fp.append(bt);
+  });
+  document.querySelectorAll('[data-ordem]').forEach(function (b) { b.addEventListener('click', function () { st.ordem = b.dataset.ordem; document.querySelectorAll('[data-ordem]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); draw(); }); });
+  fp.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; st.produto = b.dataset.produto; fp.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); draw(); });
+  document.getElementById('com-plano').addEventListener('change', function (e) { st.comPlano = e.target.checked; draw(); });
+
+  function draw() {
+    var lista = document.getElementById('lista'); lista.replaceChildren();
+    var ps = st.produto === 'todos' ? produtos : produtos.filter(function (p) { return p.id === st.produto; });
+    ps.forEach(function (p) {
+      var rs = de(p.id).filter(function (o) { return st.comPlano || !o.exige_plano; });
+      if (st.ordem === 'pix') rs = rs.filter(function (o) { return N(o.pix) !== null; }).sort(function (a, b) { return N(a.pix) - N(b.pix); });
+      else rs = rs.filter(function (o) { return N(o.parcelado) !== null || N(o.parcelas) !== null; }).sort(function (a, b) {
+        var ta = N(a.parcelado), tb = N(b.parcelado);
+        if (ta === null && tb === null) return 0; if (ta === null) return 1; if (tb === null) return -1;
+        var sa = a.sem_juros === 'sim' ? 0 : 1, sb = b.sem_juros === 'sim' ? 0 : 1;
+        return sa - sb || ta - tb || (N(b.parcelas) || 0) - (N(a.parcelas) || 0);
+      });
+      rs.sort(function (a, b) { return (a.status === 'Esgotado') - (b.status === 'Esgotado'); });
+      var g = el('section', 'group'); g.append(el('h3', '', nome(p)));
+      if (!rs.length) { g.append(el('p', 'empty', 'Nenhuma oferta encontrada ainda.')); lista.append(g); return; }
+      var ol = el('ol');
+      rs.forEach(function (o, i) {
+        var li = el('li', 'item' + (i === 0 && o.status !== 'Esgotado' ? ' top' : ''));
+        li.append(el('div', 'rank', String(i + 1)));
+        var body = el('div'); body.append(el('div', 'store', o.loja));
+        var main = el('div', 'main'), sec = el('div', 'second');
+        var parc = N(o.parcelado), np = N(o.parcelas), pix = N(o.pix);
+        if (st.ordem === 'pix') {
+          main.textContent = fmt.format(pix) + ' à vista';
+          sec.textContent = parc !== null ? 'ou ' + fmt.format(parc) + (np ? ' em ' + np + 'x' : ' no cartão') : np ? 'até ' + np + 'x, total não informado' : 'parcelamento não informado';
+        } else {
+          main.textContent = np && parc !== null ? np + 'x de ' + fmt.format(parc / np) : np ? np + 'x' : 'Parcelado';
+          sec.textContent = (parc !== null ? 'total ' + fmt.format(parc) : 'total não informado') + (pix !== null ? ' · à vista ' + fmt.format(pix) : '');
+        }
+        body.append(main, sec);
+        if (o.condicoes) body.append(el('div', 'cond', o.condicoes));
+        var tags = el('div', 'tags');
+        if (st.ordem !== 'pix') tags.append(el('span', 'tag' + (o.sem_juros === 'sim' ? ' ok' : ''), o.sem_juros === 'sim' ? 'sem juros' : 'juros não informados'));
+        if (o.exige_plano) tags.append(el('span', 'tag warn', 'exige plano'));
+        if (o.status) tags.append(el('span', 'tag' + (o.status === 'Visto na página da loja' ? ' ok' : o.status === 'Não verificado' || o.status === 'Esgotado' ? ' warn' : ''), o.status));
+        tags.append(el('span', 'tag', 'visto ' + dataBR(o.visto_em) + (o.fonte ? ' · ' + o.fonte : '')));
+        if (pix !== null && N(p.meta_preco) && pix <= N(p.meta_preco)) tags.append(el('span', 'tag ok', 'bateu a meta'));
+        body.append(tags); li.append(body);
+        var act = el('div', 'act'); link(act, o, o.link_tipo === 'anúncio' ? 'Ver anúncio' : 'Abrir', 'btn'); li.append(act);
+        ol.append(li);
+      });
+      g.append(ol); lista.append(g);
+    });
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
