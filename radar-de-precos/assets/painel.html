@@ -40,7 +40,7 @@ a{color:inherit}
 .mbox{background:var(--soft);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:2px 10px}
 .mbox .mrot,.mbox .mval{grid-column:1}
 .mbox .mloja{grid-column:1}
-.mbox .mlink{grid-column:2;grid-row:2 / span 2;align-self:center;margin:0}
+.mbox .mlink{grid-column:2;grid-row:2 / span 3;align-self:center;margin:0}
 .mrot{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 .mval{font-family:var(--serif);font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums;margin:2px 0 4px;white-space:nowrap}
 .mloja{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);min-width:0}
@@ -107,6 +107,22 @@ details.ajuda li{margin-bottom:6px}
 .rodape a,.rodape button{color:var(--muted);font:inherit;text-decoration:underline;background:none;border:0;padding:0;cursor:pointer}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .pcard,.mbox,.of,.cat{position:relative}
+.mtot{grid-column:1;font-size:12px;color:var(--muted);margin-top:-1px}
+.hist{border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+.hist summary{cursor:pointer;list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;font-size:13px;font-weight:600}
+.hist summary::-webkit-details-marker{display:none}
+.hist summary .hres{font-weight:400;color:var(--muted);font-size:12px}
+.hist svg{display:block;width:100%;height:64px;margin:12px 0 4px;overflow:visible}
+.heixo{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--muted)}
+.hist svg .hl{fill:none;stroke:var(--ok);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.hist svg .hp{fill:var(--panel);stroke:var(--ok);stroke-width:2}
+.hist svg .hm{stroke:var(--warn);stroke-dasharray:3 3;stroke-width:1}
+.hist svg text{font-size:13px;fill:var(--muted)}
+.hist ol{list-style:none;margin:6px 0 0;padding:0;font-size:12.5px}
+.hist li{display:grid;grid-template-columns:48px 1fr;gap:2px 10px;padding:6px 0;border-top:1px dashed var(--line)}
+.hist li b{font-variant-numeric:tabular-nums}
+.hist li span{grid-column:2;color:var(--muted);font-size:11.5px}
+.hist .hnota{font-size:11.5px;color:var(--muted);margin:6px 0 0}
 @media (max-width:640px){.produtos{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:84%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;}.produtos::-webkit-scrollbar{display:none}.pcard{scroll-snap-align:start}.pfoto{aspect-ratio:16/10}.barra{position:static;backdrop-filter:none;-webkit-backdrop-filter:none}#filtro-produtos{flex-wrap:nowrap;overflow-x:auto;width:100%;scrollbar-width:none}#filtro-produtos::-webkit-scrollbar{display:none}.pchip{flex:none}.of{grid-template-columns:22px 34px 1fr;gap:10px}.of .acao{grid-column:3}.logo{width:34px;height:34px}.mval{font-size:22px}}
 </style>
 </head>
@@ -157,6 +173,7 @@ details.ajuda li{margin-bottom:6px}
       <li><b>À vista</b> ordena pelo menor preço no Pix ou à vista.</li>
       <li><b>Visto na loja</b>: o preço foi conferido na página do anúncio. <b>Não verificado</b>: veio de notícia, comparador ou listagem e precisa ser conferido no carrinho.</li>
       <li><b>Referência</b>: preço oficial do fabricante, para comparação.</li>
+      <li><b>Histórico de preços</b> mostra o menor preço à vista registrado em cada dia. O registro começa na primeira coleta; preços de antes vêm de notícias datadas, quando existem.</li>
       <li>Ofertas que exigem plano de operadora ou assinatura ficam escondidas por padrão, porque o custo mensal não entra no total.</li>
     </ul>
   </details>
@@ -211,6 +228,34 @@ details.ajuda li{margin-bottom:6px}
       return a;
     }
 
+    function historico(p, hs) {
+      var d = el('details', 'hist'), s = el('summary'), ult = hs[hs.length - 1], min = hs.reduce(function (m, h) { return N(h.pix) < N(m.pix) ? h : m; }, hs[0]);
+      s.append('Histórico de preços', el('span', 'hres', hs.length === 1 ? '1 registro' : hs.length + ' registros · mínimo ' + F(N(min.pix)) + ' em ' + dataBR(min.data)));
+      d.append(s);
+      if (hs.length > 1) {
+        var W = 300, Hh = 80, ns = 'http://www.w3.org/2000/svg', meta = N(p.meta_preco);
+        var t0 = new Date(hs[0].data).getTime(), t1 = new Date(ult.data).getTime(), span = Math.max(t1 - t0, 1);
+        var vs = hs.map(function (h) { return N(h.pix); });
+        var lo = Math.min.apply(null, vs.concat(meta ? [meta] : [])), hi = Math.max.apply(null, vs.concat(meta ? [meta] : [])), pad = (hi - lo) * 0.15 || 1; lo -= pad; hi += pad;
+        var X = function (h) { return (new Date(h.data).getTime() - t0) / span * W; }, Y = function (v) { return (hi - v) / (hi - lo) * Hh; };
+        var svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + Hh); svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-label', 'Menor preço à vista registrado por dia, de ' + dataBR(hs[0].data) + ' a ' + dataBR(ult.data) + ': ' + hs.map(function (h) { return dataBR(h.data) + ' ' + F(N(h.pix)); }).join(', '));
+        var mk = function (tag, at) { var e = document.createElementNS(ns, tag); for (var k in at) e.setAttribute(k, at[k]); e.setAttribute('vector-effect', 'non-scaling-stroke'); svg.append(e); return e; };
+        if (meta) mk('line', {x1: 0, x2: W, y1: Y(meta), y2: Y(meta), 'class': 'hm'});
+        mk('polyline', {points: hs.map(function (h) { return X(h).toFixed(1) + ',' + Y(N(h.pix)).toFixed(1); }).join(' '), 'class': 'hl'});
+        var eixo = el('div', 'heixo'); eixo.append(el('span', '', dataBR(hs[0].data) + ' · ' + F(N(hs[0].pix))), el('span', '', dataBR(ult.data) + ' · ' + F(N(ult.pix))));
+        d.append(svg, eixo);
+      }
+      var ol = el('ol');
+      hs.slice().reverse().forEach(function (h) {
+        var li = el('li'); li.append(el('b', '', dataBR(h.data)), el('b', '', F(N(h.pix)) + ' à vista'));
+        li.append(el('span', '', [h.loja, N(h.parcelas) && N(h.parcelado) !== null ? 'ou ' + N(h.parcelas) + 'x de ' + F(N(h.parcelado) / N(h.parcelas)) : '', h.fonte].filter(Boolean).join(' · ')));
+        ol.append(li);
+      });
+      d.append(ol, el('p', 'hnota', 'Menor preço à vista registrado em cada dia, pela coleta diária ou por notícias datadas. Dias sem registro ficam de fora.' + (p.meta_preco ? ' A linha tracejada é a meta de bom preço.' : '')));
+      return d;
+    }
+
     // Cabeçalho
     document.title = (D.titulo || 'Radar de Preços') + ' · Radar de Preços';
     document.getElementById('titulo').textContent = D.titulo || 'Radar de Preços';
@@ -224,7 +269,7 @@ details.ajuda li{margin-bottom:6px}
     if (D.atualizado_em) document.getElementById('atualizado').textContent = 'Preços coletados em ' + new Date(D.atualizado_em).toLocaleString('pt-BR', {dateStyle: 'short', timeStyle: 'short'}) + (D.proxima_atualizacao ? '. Próxima atualização: ' + D.proxima_atualizacao + '.' : '.');
     if (D.evento && D.evento.data) {
       var dias = Math.ceil((new Date(D.evento.data + 'T00:00:00-03:00') - new Date()) / 86400000), ch = document.getElementById('contagem-evento');
-      ch.textContent = dias > 1 ? (D.evento.nome || 'Evento') + ' em ' + dias + ' dias' : dias === 1 ? (D.evento.nome || 'Evento') + ' amanhã' : dias === 0 ? 'Hoje: ' + (D.evento.nome || 'evento') : (D.evento.nome || 'Evento') + ' encerrado';
+      ch.textContent = dias > 1 ? (D.evento.nome || 'Evento') + ' em ' + dias + ' dias' : dias === 1 ? (D.evento.nome || 'Evento') + ' amanhã' : dias === 0 ? 'Hoje: ' + (D.evento.nome || 'evento') : (D.evento.nome || 'Evento') + ' encerrada' + (D.acompanhar_ate && new Date(D.acompanhar_ate + 'T23:59:59-03:00') >= new Date() ? ' · monitorando até ' + dataBR(D.acompanhar_ate) : '');
       ch.hidden = false;
     }
     if (cats && cats.length > 1) {
@@ -243,8 +288,8 @@ details.ajuda li{margin-bottom:6px}
       if (p.imagem && safe(p.imagem)) { var f = el('div', 'pfoto'), im = el('img'); im.src = p.imagem; im.alt = p.imagem_alt || p.nome; im.loading = 'lazy'; im.onerror = function () { f.remove(); }; f.append(im); c.append(f); }
       var b = el('div', 'pcorpo'), h = el('div'); h.append(el('h2', 'pnome', p.nome), el('div', 'pvar', p.variante || '')); b.append(h);
       var m = el('div', 'melhor'), a = melhorVista(rs), q = melhorParc(rs);
-      [[a, 'Menor à vista', a ? F(N(a.pix)) : '—'], [q, 'Melhor parcelado', q ? (N(q.parcelas) ? N(q.parcelas) + 'x · ' : '') + F(N(q.parcelado)) : '—']].forEach(function (x) {
-        var box = el('div', 'mbox'); box.append(el('div', 'mrot', x[1]), el('div', 'mval', x[2]));
+      [[a, 'Menor à vista', a ? F(N(a.pix)) : '—', null], [q, 'Melhor parcelado', q ? (N(q.parcelas) ? N(q.parcelas) + 'x de ' + F(N(q.parcelado) / N(q.parcelas)) : F(N(q.parcelado))) : '—', q && N(q.parcelas) ? 'total ' + F(N(q.parcelado)) + ' sem juros' : null]].forEach(function (x) {
+        var box = el('div', 'mbox'); box.append(el('div', 'mrot', x[1]), el('div', 'mval', x[2])); if (x[3]) box.append(el('div', 'mtot', x[3]));
         if (x[0]) { var lj = el('div', 'mloja'); lj.append(logo(x[0], true), el('span', '', x[0].loja)); box.append(lj); var lk = link(x[0], 'Ver oferta', 'mlink'); if (lk) box.append(lk); }
         else box.append(el('div', 'mloja', 'Sem oferta ainda'));
         m.append(box);
@@ -259,6 +304,8 @@ details.ajuda li{margin-bottom:6px}
         p.specs.forEach(function (x) { var li = el('li'); li.append(el('span', '', x[0]), x[1]); ul.append(li); });
         d.append(s, ul); b.append(d);
       }
+      var hs = (p.historico || []).filter(function (h) { return N(h.pix) !== null; }).sort(function (x, y) { return x.data < y.data ? -1 : 1; });
+      if (hs.length) b.append(historico(p, hs));
       c.append(b); cards.append(c);
     });
 

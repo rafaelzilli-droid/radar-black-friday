@@ -1,6 +1,6 @@
 # Radar de Preços: uma skill para monitorar a Black Friday com IA
 
-Diga ao seu assistente de IA o que você quer comprar. Ele pesquisa os preços em várias lojas, monta um painel com o ranking de **menor preço à vista** e **melhor parcelamento sem juros** (com o link de cada oferta) e, se o assistente tiver tarefas agendadas, atualiza tudo sozinho todo dia até a Black Friday. No dia, entrega o ranking final e diz se a promoção é melhor mesmo ou se a semana estava mais barata.
+Diga ao seu assistente de IA o que você quer comprar. Ele pesquisa os preços em várias lojas, monta um painel com o ranking de **menor preço à vista** e **melhor parcelamento sem juros** (com o link de cada oferta) e, se o assistente tiver tarefas agendadas, atualiza tudo sozinho todo dia, guarda o histórico de preços e segue até a segunda depois da Black Friday. No dia, entrega o ranking final e diz se a promoção é melhor mesmo ou se a semana estava mais barata. Se você quiser, avisa por e-mail.
 
 ![Painel do Radar de Preços](docs/painel.png)
 
@@ -12,7 +12,9 @@ Nasceu de um caso real: comparar iPhone 17, 17 Pro e 18 Pro na Black Friday de 2
 - Busca em mais de 15 lojas brasileiras (Amazon, Mercado Livre oficial, Magalu, KaBuM!, Fast Shop, Casas Bahia, Carrefour, Americanas, lojas oficiais das marcas, operadoras...).
 - Separa o que foi **visto na página da loja** do que veio de notícia ou comparador, e marca ofertas suspeitas: relâmpago, cupom só para assinante, vendedor terceiro, parcelamento que exige plano.
 - Monta um painel com foto e ficha de cada produto para comparar lado a lado, o melhor preço de cada um e uma lista ordenada com o link para o anúncio.
-- Agenda uma atualização por dia até o evento e um ranking final no dia, guardando o histórico para comparar.
+- Procura preços dos dias anteriores em notícias datadas e registra um ponto por dia no histórico, que vira um gráfico em cada produto.
+- Agenda uma atualização por dia até o evento, o ranking final no dia e o acompanhamento até a segunda seguinte (Cyber Monday).
+- Avisa por e-mail, se você pedir: todo dia, só quando bater a meta ou só no fechamento.
 
 Ela nunca compra nada nem entra na sua conta. A decisão e o carrinho são seus.
 
@@ -53,7 +55,8 @@ radar-de-precos/
 ├── references/
 │   ├── coleta.md                 lojas, como verificar, sinais de alerta
 │   ├── formato-dos-dados.md      formato que o painel lê
-│   └── rotina.md                 instrução das atualizações agendadas
+│   ├── rotina.md                 instrução das atualizações agendadas
+│   └── notificacao.md            aviso por e-mail
 └── assets/
     ├── painel.html               o painel (HTML único, sem dependências)
     ├── dados.js                  dados que o painel mostra

@@ -6,7 +6,7 @@ window.RADAR = {
  },
  "moeda": "BRL",
  "atualizado_em": "2026-11-24T11:40:00-03:00",
- "proxima_atualizacao": null,
+ "proxima_atualizacao": "todo dia às 8h até 30/11",
  "titulo": "iPhone na Black Friday",
  "subtitulo": "iPhone 17, 17 Pro e 18 Pro de 256 GB",
  "produtos": [
@@ -33,6 +33,24 @@ window.RADAR = {
      "Tela",
      "6,3\", 120 Hz"
     ]
+   ],
+   "historico": [
+    {
+     "data": "2026-11-23",
+     "pix": 5273.1,
+     "parcelado": 5859,
+     "parcelas": 12,
+     "loja": "Amazon",
+     "fonte": "MacMagazine (23/11)"
+    },
+    {
+     "data": "2026-11-24",
+     "pix": 5273,
+     "parcelado": null,
+     "parcelas": null,
+     "loja": "Amazon",
+     "fonte": "Coleta do Radar"
+    }
    ]
   },
   {
@@ -59,6 +77,24 @@ window.RADAR = {
      "Tela",
      "6,3\", 120 Hz"
     ]
+   ],
+   "historico": [
+    {
+     "data": "2026-11-16",
+     "pix": 8904,
+     "parcelado": null,
+     "parcelas": null,
+     "loja": "Amazon",
+     "fonte": "InfoMoney (16/11)"
+    },
+    {
+     "data": "2026-11-24",
+     "pix": 8819,
+     "parcelado": null,
+     "parcelas": null,
+     "loja": "Fast Shop",
+     "fonte": "Coleta do Radar"
+    }
    ]
   },
   {
@@ -84,6 +120,24 @@ window.RADAR = {
      "Tela",
      "6,3\", 120 Hz"
     ]
+   ],
+   "historico": [
+    {
+     "data": "2026-11-22",
+     "pix": 8000,
+     "parcelado": null,
+     "parcelas": null,
+     "loja": "Amazon",
+     "fonte": "Pelando (22/11), oferta relâmpago"
+    },
+    {
+     "data": "2026-11-24",
+     "pix": 9210,
+     "parcelado": 10234,
+     "parcelas": 10,
+     "loja": "Mercado Livre (loja oficial Apple)",
+     "fonte": "Coleta do Radar (preço visto em 14/10)"
+    }
    ]
   }
  ],
@@ -391,5 +445,6 @@ window.RADAR = {
    "loja_logo": "https://www.google.com/s2/favicons?domain=apple.com&sz=64"
   }
  ],
- "metas_fonte": "Metas: Tekimobile e TecMundo (17), Tekimobile e Diário da Mídia (17 Pro), Tekimobile (18 Pro)."
+ "metas_fonte": "Metas: Tekimobile e TecMundo (17), Tekimobile e Diário da Mídia (17 Pro), Tekimobile (18 Pro).",
+ "acompanhar_ate": "2026-11-30"
 };

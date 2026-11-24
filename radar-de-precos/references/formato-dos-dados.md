@@ -11,6 +11,7 @@ window.RADAR = {
   "moeda": "BRL",
   "atualizado_em": "2026-11-24T09:00:00-03:00",
   "proxima_atualizacao": "qua 25/11, 10h",        // texto livre, opcional
+  "acompanhar_ate": "2026-11-30",                  // opcional: último dia de monitoramento
   "produtos": [ /* ... */ ],
   "ofertas": [ /* ... */ ]
 };
@@ -28,6 +29,7 @@ window.RADAR = {
 | `specs` | lista de `[rótulo, valor]` | 3 ou 4 itens que ajudem a comparar |
 | `meta_preco` | número ou null | preço à vista que a pessoa considera bom |
 | `nota` | texto ou null | aviso curto (ex.: "saiu de linha") |
+| `historico` | lista de `{data, pix, parcelado, parcelas, loja, fonte}` | um ponto por dia com o menor preço à vista daquele dia; vira o gráfico do card. Pontos de antes da primeira coleta vêm de notícias datadas, com a fonte |
 
 ## Oferta
 
