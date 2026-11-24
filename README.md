@@ -20,7 +20,7 @@ Ela nunca compra nada nem entra na sua conta. A decisão e o carrinho são seus.
 
 ### Claude (claude.ai, app desktop e celular)
 
-1. Baixe o [`radar-de-precos.zip`](radar-de-precos.zip) deste repositório.
+1. Baixe o [`radar-de-precos.zip`](radar-de-precos.zip) deste repositório (ou em [radar.manobrastudio.com](https://radar.manobrastudio.com)).
 2. Em **Configurações > Capabilities**, deixe ligado **Code execution and file creation**.
 3. Vá em **Customize > Skills**, clique em **+**, depois em **Create skill > Upload a skill**, e envie o zip.
 4. Numa conversa nova, peça: *"quero monitorar o preço do PS5 Pro e da TV LG C5 de 55 até a Black Friday"*.

@@ -85,7 +85,7 @@ footer{font-size:12px;color:var(--muted);margin-top:30px}
       <li>Ofertas de operadora ou com assinatura escondem um custo mensal. Recondicionados e usados ficam de fora.</li>
     </ul>
   </details>
-  <footer>Feito com a skill <a href="https://github.com/rafaelzilli-droid/radar-black-friday">Radar de Preços</a>. Preços mudam rápido: confira sempre no carrinho antes de pagar.</footer>
+  <footer>Feito com a skill <a href="https://radar.manobrastudio.com">Radar de Preços</a>. Preços mudam rápido: confira sempre no carrinho antes de pagar.</footer>
 </div>
 
 <!-- Os dados vêm de dados.js (window.RADAR = {...}) ou de um bloco <script id="radar-dados" type="application/json"> colado aqui. -->
@@ -145,9 +145,9 @@ footer{font-size:12px;color:var(--muted);margin-top:30px}
     var rs = de(p.id), card = el('section', 'card');
     if (safe(p.imagem) || (p.imagem && /^data:image\//.test(p.imagem))) {
       var img = el('img', 'photo'); img.src = p.imagem; img.alt = p.imagem_alt || nome(p); img.loading = 'lazy';
-      img.onerror = function () { var ph = el('div', 'photo ph', 'sem foto'); img.replaceWith(ph); };
+      img.onerror = function () { img.remove(); };
       card.append(img);
-    } else card.append(el('div', 'photo ph', 'sem foto'));
+    }
     var b = el('div', 'card-body'); b.append(el('h2', '', nome(p)));
     if (p.specs && p.specs.length) {
       var ul = el('ul', 'specs');
