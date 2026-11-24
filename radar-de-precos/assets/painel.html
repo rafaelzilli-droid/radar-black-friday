@@ -117,8 +117,8 @@ table.tab{width:100%;border-collapse:collapse;font-size:14px;min-width:760px}
 .tab .n{font-family:var(--serif);font-size:18px;color:var(--muted);width:30px;text-align:center}
 .tab tr.top .n{color:var(--ok)}
 .tab tr.top{background:color-mix(in srgb,var(--ok-bg) 55%,transparent)}
-.tab tr.ref{opacity:.7}
-.tab tr.esgotado{opacity:.5}
+.tab tr.ref{background:var(--soft)}
+.tab tr.esgotado .v{text-decoration:line-through}
 .tab .lj{display:flex;align-items:center;gap:10px;min-width:170px}
 .tab .lj b{font-weight:600;display:block}
 .tab .lj small{display:block;color:var(--muted);font-size:12px}
@@ -251,7 +251,7 @@ table.tab{min-width:0;display:block}.tab thead{display:none}.tab tbody{display:b
     var ref0 = D.atualizado_em ? new Date(String(D.atualizado_em).slice(0, 10) + 'T12:00:00') : new Date(), validade = N(D.validade_dias) || 3;
     var atual = function (o) { if (!o.visto_em) return false; return (ref0 - new Date(String(o.visto_em).slice(0, 10) + 'T12:00:00')) / 86400000 <= validade; };
     function melhorVista(rs) { return rs.filter(function (o) { return vivo(o) && atual(o) && N(o.pix) !== null && !o.exige_plano; }).sort(function (a, b) { return N(a.pix) - N(b.pix); })[0]; }
-    function melhorParc(rs) { return rs.filter(function (o) { return vivo(o) && atual(o) && N(o.parcelado) !== null && o.sem_juros === 'sim' && !o.exige_plano; }).sort(function (a, b) { return N(a.parcelado) - N(b.parcelado) || (N(b.parcelas) || 0) - (N(a.parcelas) || 0); })[0]; }
+    function melhorParc(rs) { return rs.filter(function (o) { return vivo(o) && atual(o) && N(o.parcelado) !== null && N(o.parcelas) > 1 && o.sem_juros !== 'nao' && !o.exige_plano; }).sort(function (a, b) { return N(a.parcelado) - N(b.parcelado) || (N(b.parcelas) || 0) - (N(a.parcelas) || 0); })[0]; }
 
     function logo(o, mini) {
       var box = el('span', 'logo' + (mini ? ' mini' : ''));
@@ -327,7 +327,7 @@ table.tab{min-width:0;display:block}.tab thead{display:none}.tab tbody{display:b
       if (p.imagem && safe(p.imagem)) { var f = el('div', 'pfoto'), im = el('img'); im.src = p.imagem; im.alt = p.imagem_alt || p.nome; im.loading = 'lazy'; im.onerror = function () { f.remove(); }; f.append(im); c.append(f); }
       var b = el('div', 'pcorpo'), h = el('div'); h.append(el('h2', 'pnome', p.nome), el('div', 'pvar', p.variante || '')); b.append(h);
       var m = el('div', 'melhor'), a = melhorVista(rs), q = melhorParc(rs);
-      [[a, 'Menor à vista', a ? F(N(a.pix)) : '—', null], [q, 'Melhor parcelado', q ? (N(q.parcelas) ? N(q.parcelas) + 'x de ' + F(N(q.parcelado) / N(q.parcelas)) : F(N(q.parcelado))) : '—', q && N(q.parcelas) ? 'total ' + F(N(q.parcelado)) + ' sem juros' : null]].forEach(function (x) {
+      [[a, 'Menor à vista', a ? F(N(a.pix)) : '—', null], [q, 'Melhor parcelado', q ? (N(q.parcelas) ? N(q.parcelas) + 'x de ' + F(N(q.parcelado) / N(q.parcelas)) : F(N(q.parcelado))) : '—', q && N(q.parcelas) ? 'total ' + F(N(q.parcelado)) + (q.sem_juros === 'sim' ? ' sem juros' : ', juros não informados') : null]].forEach(function (x) {
         var box = el('div', 'mbox'); box.append(el('div', 'mrot', x[1]), el('div', 'mval', x[2])); if (x[3]) box.append(el('div', 'mtot', x[3]));
         if (x[0]) { var lj = el('div', 'mloja'); lj.append(logo(x[0], true), el('span', '', x[0].loja)); box.append(lj); var lk = link(x[0], 'Ver oferta', 'mlink'); if (lk) box.append(lk); }
         else box.append(el('div', 'mloja', 'Sem preço confirmado nos últimos ' + validade + ' dias'));
